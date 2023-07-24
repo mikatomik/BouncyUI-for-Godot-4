@@ -20,6 +20,8 @@ class_name BouncyButton
 @export var scaled_font_size : int = 35 :
 	set(value):
 		scaled_font_size = value
+		if Engine.is_editor_hint() and view_scaled_font_size:
+			set("theme_override_font_sizes/font_size", value)
 	get:
 		return scaled_font_size
 		
@@ -29,9 +31,15 @@ class_name BouncyButton
 	set(value):
 		view_scaled_font_size = value
 		if value:
-			set("theme_override_font_sizes/font_size", scaled_font_size)
+			if animation_preview_enabled:
+				tween_font_size_up()
+			else:
+				set("theme_override_font_sizes/font_size", scaled_font_size)
 		else:
-			set("theme_override_font_sizes/font_size", base_font_size)
+			if animation_preview_enabled:
+				tween_font_size_down()
+			else:
+				set("theme_override_font_sizes/font_size", base_font_size)
 			
 	get:
 		return view_scaled_font_size
@@ -70,6 +78,9 @@ enum EASE_TYPE {
 ##after this is triggered, it will strand controller and keyboard users without
 ##a way to access the UI nodes unless you manually call grab_focus() on another node.
 @export var release_focus_on_mouse_exit : bool = false
+
+##If enabled, preview tween in editor when "View Scaled Font Size" is toggled.
+@export var animation_preview_enabled : bool = false
 
 func _enter_tree() -> void:
 	if !focus_entered.is_connected(_on_gained_focus):
