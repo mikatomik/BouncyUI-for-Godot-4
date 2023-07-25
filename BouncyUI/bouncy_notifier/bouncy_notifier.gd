@@ -3,7 +3,7 @@ extends Label
 class_name BouncyNotifier
 
 const default_text : String = "You forgot to set the text!"
-const default_font_size : int = 35
+const default_font_size : int = 15
 
 ## How much to scale during animation.
 @export var scale_amount : Vector2 = Vector2(2.5,2.5)
@@ -54,7 +54,10 @@ enum EASE_TYPE {
 	EASE_OUT##Scale using Tween.EASE_OUT.
 }
 
-func set_scale_params(final_scale : Vector2 = Vector2(2.0,2.0), duration : float = 1.0, origin : SCALE_ORIGIN = SCALE_ORIGIN.CENTER, scale_trans : TRANSITION_TYPE = TRANSITION_TYPE.BOUNCE, ease : EASE_TYPE = EASE_TYPE.EASE_OUT) -> BouncyNotifier:
+func set_scale_params(final_scale : Vector2 = Vector2(2.0,2.0), 
+					duration : float = 1.0, origin : SCALE_ORIGIN = SCALE_ORIGIN.CENTER,
+					scale_trans : TRANSITION_TYPE = TRANSITION_TYPE.BOUNCE,
+					ease : EASE_TYPE = EASE_TYPE.EASE_OUT) -> BouncyNotifier:
 	scale_amount = final_scale
 	scale_duration = duration
 	scale_curve_type = scale_trans
@@ -62,13 +65,19 @@ func set_scale_params(final_scale : Vector2 = Vector2(2.0,2.0), duration : float
 	scale_origin = origin
 	return self
 
-func set_text_params(message : String = default_text, font_size : int = default_font_size) ->  BouncyNotifier:
+func set_text_params(message : String = default_text, font_size : int = default_font_size, theme : Theme = null) ->  BouncyNotifier:
+	if theme:
+		self.set("theme", theme)
 	self.set_text(message)
 	set("theme_override_font_sizes/font_size", font_size)
 	return self
 	
-func set_translation_params(start_pos : Vector2, move_dir : Vector2 = Vector2.UP, duration : float = 1.0, move_trans : TRANSITION_TYPE = TRANSITION_TYPE.LINEAR, ease : EASE_TYPE = EASE_TYPE.EASE_OUT) -> BouncyNotifier:
-	position = start_pos
+func set_translation_params(start_pos : Vector2, move_dir : Vector2 = Vector2.UP, 
+							duration : float = 1.0,
+							move_trans : TRANSITION_TYPE = TRANSITION_TYPE.LINEAR,
+							ease : EASE_TYPE = EASE_TYPE.EASE_OUT) -> BouncyNotifier:
+	self.global_position = start_pos
+	self.global_position = Vector2(self.global_position.x - (size.x/2.0), self.global_position.y - (size.y/2.0))
 	move_direction = move_dir
 	move_duration = duration
 	move_transition_type = move_trans
@@ -78,10 +87,10 @@ func set_translation_params(start_pos : Vector2, move_dir : Vector2 = Vector2.UP
 func _process(_delta: float) -> void:
 	var bound_size : Vector2 = get("size")
 	match scale_origin:
-		SCALE_ORIGIN.TOP_LEFT     : set("pivot_offset", Vector2.ZERO)
-		SCALE_ORIGIN.BOTTOM_LEFT  : set("pivot_offset", Vector2(0, bound_size.y))
-		SCALE_ORIGIN.TOP_RIGHT    : set("pivot_offset", Vector2(bound_size.x, 0))
-		SCALE_ORIGIN.BOTTOM_RIGHT : set("pivot_offset", Vector2(bound_size.x, bound_size.y))
+		SCALE_ORIGIN.TOP_LEFT     : self.pivot_offset = Vector2.ZERO
+		SCALE_ORIGIN.BOTTOM_LEFT  : self.pivot_offset = Vector2(0, bound_size.y)
+		SCALE_ORIGIN.TOP_RIGHT    : self.pivot_offset = Vector2(bound_size.x, 0)
+		SCALE_ORIGIN.BOTTOM_RIGHT : self.pivot_offset = Vector2(bound_size.x, bound_size.y)
 		SCALE_ORIGIN.CENTER       : self.pivot_offset = Vector2(bound_size.x/2, bound_size.y/2)
 		
 
@@ -125,6 +134,8 @@ func _enter_tree() -> void:
 	set("vertical_alignment", VERTICAL_ALIGNMENT_CENTER)
 	set("theme_override_font_sizes/font_size", true)
 	set("theme_override_font_sizes/font_size", default_font_size)
+	self.pivot_offset = size/2.0
+	self.global_position = Vector2(self.global_position.x - (size.x/2.0), self.global_position.y - (size.y/2.0))
 
 func animation_ended() -> void:
 	self.queue_free()
