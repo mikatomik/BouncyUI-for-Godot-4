@@ -32,8 +32,12 @@ scaled font size is too big, it will cause the bounding box of the button to gro
 avoid this behavior, either decrease scaled font size or increase "custom_minimum_size."
 
 * BouncyNotifier
-  - This node is NOT meant to be used in the editor, but rather created in code. It is a "fire and forget" object.
-First, when you want to have a BouncyNotifier fire off, make a new one.
+  - This node is NOT meant to be used in the editor, but rather created in code. It is a "fire and forget" object, really only
+useful for 2D. 
+  - First, when you want to have a BouncyNotifier fire off, make a new one in code, and add as a child of the root of your scene.
+Then, call the three functions to set up the node. set_text_params(), set_translation_params(), set_scale_params(). Any arguments you skip
+will be filled in with a default value.
+	![](https://github.com/mikatomik/BouncyUI-for-Godot-4/blob/master/screenshots/bouncynotifiercode.png)
 
 
 ## License
