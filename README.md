@@ -38,6 +38,7 @@ useful for 2D.
 Then, call the three functions to set up the node. set_text_params(), set_translation_params(), set_scale_params(). Any arguments you skip
 will be filled in with a default value.
 	![](https://github.com/mikatomik/BouncyUI-for-Godot-4/blob/master/screenshots/bouncynotifiercode.png)
+  - Don't forget to call start() when you're done! Once the animation is finished, the node will remove itself from the scene tree.
 
 
 ## License
