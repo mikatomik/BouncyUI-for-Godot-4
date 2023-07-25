@@ -61,7 +61,7 @@ enum TRANSITION_TYPE {
 	LINEAR,##Scale using Tween.TRANS_LINEAR.
 	BOUNCE,##Scale using Tween.TRANS_BOUNCE. If the Base Font Size and Scaled Font Size are too close, this won't be perceivable. Additionally, if the Scale Speed is too low it may also be unperceivable.
 	SPRING, ##Scale using Tween.TRANS_SPRING. If the Base Font Size and Scaled Font Size are too close, this won't be perceivable. Additionally, if the Scale Speed is too low it may also be unperceivable.
-	ELASTIC ## Scale using Twee.TRANS_ELASTIC.
+	ELASTIC ## Scale using Tween.TRANS_ELASTIC.
 }
 
 ##Ease type to be used when scaling up.
@@ -74,8 +74,8 @@ enum TRANSITION_TYPE {
 enum EASE_TYPE {
 	EASE_IN_OUT,##Scale using Tween.EASE_IN_OUT.
 	EASE_OUT_IN,##Scale using Tween.EASE_OUT_IN.
-	EASE_IN,##Scale using TWEEN.EASE_IN.
-	EASE_OUT##Scale using TWEEN.EASE_OUT.
+	EASE_IN,##Scale using Tween.EASE_IN.
+	EASE_OUT##Scale using Tween.EASE_OUT.
 }
 
 ##Button will grab focus and animation will happen when mouse
@@ -89,7 +89,7 @@ enum EASE_TYPE {
 @export var release_focus_on_mouse_exit : bool = false
 
 ##If enabled, preview tween in editor when "View Scaled Font Size" is toggled.
-@export var animation_preview_enabled : bool = true
+@export var animation_preview_enabled : bool = false
 
 var active_tween : Tween = null #Track the active tween so we can kill it before starting a new one
 
@@ -103,15 +103,19 @@ func _enter_tree() -> void:
 	if !mouse_exited.is_connected(_on_mouse_exited):
 		mouse_exited.connect(_on_mouse_exited)
 		
-	set("theme_override_font_sizes/font_size", true)
-	set("theme_override_font_sizes/font_size", base_font_size)
-	set("custom_minimum_size", Vector2(300, 60))
-	
-	if view_scaled_font_size:
-		view_scaled_font_size = false
+	if Engine.is_editor_hint():
+		set("theme_override_font_sizes/font_size", true)
+		set("theme_override_font_sizes/font_size", base_font_size)
+		set("custom_minimum_size", Vector2(300, 60))
+		set("text", "BouncyButton")
 		
-	if animation_preview_enabled:
-		animation_preview_enabled = false
+	elif !Engine.is_editor_hint():
+		if animation_preview_enabled:
+			animation_preview_enabled = false
+		
+		if view_scaled_font_size:
+			view_scaled_font_size = false
+
 
 func _on_gained_focus() -> void:
 	tween_font_size_up()
